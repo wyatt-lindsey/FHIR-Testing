@@ -61,11 +61,11 @@ Fill this in from the cohort run (Step 6 in the guide). Pick some patients the c
 | 112236 | Parker Hintz | Not applicable | Insufficient data | No | Patient is deceased, meaning the decision should be "not applicable" instead of "insufficient data". Fixed by D14; |
 | 138555 | Larissa Golner | Not applicable | Not applicable | Yes | No evidence of CKD |
 | 216334 | Dong Borer | Not applicable | Not applicable | Yes | Has active type 2 diabetes and CKD, but latest eGFR is below threshold |
-| 220864 | Brianna Pagac | Insufficient data | Recommend | No | Has active type 2 diabetes and CKD, but has two eGFR values on the most recent day (one over 20, and one under 20) |
-| | | | | | |
-| | | | | | |
-| | | | | | |
-| | | | | | |
+| 220864 | Brianna Pagac | Insufficient data | Recommend | No | Has active type 2 diabetes and CKD, but has two eGFR values on the most recent day (one over 20, and one under 20). Fixed by D15 |
+| 237926 | Guillermina Gamez | Recommend | Recommend | Yes | Has active type 2 diabetes and CKD, latest eGFR is above threshold, no ESKD, and not currently taking an SGLT2 inhibitor |
+| 244324 | Roxanne Herzog | Insufficient data | Insufficient data | Yes | Has active type 2 diabetes and CKD, but there is no recent eGFR data |
+| 258353 | Gerda Trantow | Not applicable | Not applicable | Yes | Has active ESKD |
+| 310873 | Kenneth Ritchie | Recommend | Recommend | Yes | Has active type 2 diabetes and CKD, latest eGFR is above threshold, no ESKD, and not currently taking an SGLT2 inhibitor |
 
 ## Open questions for clinical review
 
