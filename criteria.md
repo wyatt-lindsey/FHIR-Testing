@@ -56,6 +56,7 @@ Each row is one ambiguity in the sentence above and how the code resolves it. Ch
 Fill this in from the cohort run (Step 6 in the guide). Pick some patients the code marks RECOMMEND and some it doesn't, read their full record, and record what you conclude yourself before you look at the code's answer.
 
 | Patient ID | Name | My answer | Code's answer | Agree? | Notes |
+| --- | --- | --- | --- | --- | --- |
 | 101314 | Eunice Beahan | Not applicable | Not applicable | Yes | No evidence of CKD |
 | 123560 | Jody Hickle | Recommend | Recommend | Yes | Has Type 2 Diabetes, has active Stage 1 CKD, latest eGFR ≥20 and with 365 days, is not currently on an SGLT2, and does not have ESKD |
 | 112236 | Parker Hintz | Not applicable | Insufficient data | No | Patient is deceased, meaning the decision should be "not applicable" instead of "insufficient data". Fixed by D14; |
