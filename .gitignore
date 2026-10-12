@@ -12,5 +12,10 @@ venv/
 .vscode/
 .DS_Store
 
-# Patient CSVs
+# Patient cohort and synthetic data
 *.csv
+conditions.json
+egfr.json
+meds.json
+patient.json
+review.json
