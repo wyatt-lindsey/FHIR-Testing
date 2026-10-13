@@ -1,0 +1,40 @@
+# Phase 4, Step 4: send hook requests to cds_service.py by hand.
+# Needs: HAPI running (docker start hapi) and the service running in another terminal.
+# Click "Send Request" above a POST line (or put the cursor in it and press Ctrl+Alt+R).
+# No prefetch is sent, so the service fetches from fhirServer (C1 fallback).
+
+@service = http://localhost:8000/cds-services/sglt2-t2d-ckd
+@fhir = http://localhost:8080/fhir
+
+### RECOMMEND expected: Kenneth Ritchie (truth table)
+POST {{service}}
+Content-Type: application/json
+
+{
+  "hook": "patient-view",
+  "hookInstance": "manual-recommend-310873",
+  "fhirServer": "{{fhir}}",
+  "context": { "userId": "Practitioner/example", "patientId": "310873" }
+}
+
+### INSUFFICIENT_DATA expected: Roxanne Herzog, no recent eGFR
+POST {{service}}
+Content-Type: application/json
+
+{
+  "hook": "patient-view",
+  "hookInstance": "manual-insufficient-244324",
+  "fhirServer": "{{fhir}}",
+  "context": { "userId": "Practitioner/example", "patientId": "244324" }
+}
+
+### NOT_APPLICABLE expected (no cards): Gerda Trantow, ESKD
+POST {{service}}
+Content-Type: application/json
+
+{
+  "hook": "patient-view",
+  "hookInstance": "manual-na-258353",
+  "fhirServer": "{{fhir}}",
+  "context": { "userId": "Practitioner/example", "patientId": "258353" }
+}

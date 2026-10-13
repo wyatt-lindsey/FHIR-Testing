@@ -222,10 +222,11 @@ def cards_for(result: Any) -> list[dict[str, Any]]:
             )
         ]
     if status == "INSUFFICIENT_DATA":
-        first = reasons[0] if reasons else "missing data"
+        # evaluate() lists the evidence found first and what's missing last.
+        missing = reasons[-1] if reasons else "missing data"
         return [
             _card(
-                f"SGLT2 inhibitor eligibility unclear: {first}",
+                f"SGLT2 inhibitor eligibility unclear: {missing}",
                 _detail(reasons, "ADA 11.7a may apply, but the record is missing what the rule needs:"),
                 "info",
             )

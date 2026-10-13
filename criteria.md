@@ -2,7 +2,7 @@
 
 Status: DRAFT (not yet reviewed by a clinician)
 Owner: Wyatt Lindsey
-Last updated: 2026-10-08
+Last updated: 2026-10-13
 
 ## Source
 
@@ -51,6 +51,20 @@ Each row is one ambiguity in the sentence above and how the code resolves it. Ch
 | D14 | What about patients who have died? | Not applicable if `Patient.deceasedDateTime` is on or before the evaluation date, or `deceasedBoolean` is true. A death dated after the evaluation date is ignored, so `--as-of` still works | Found in hand review (patient 112236, Synthea keeps patients who died). The code had said INSUFFICIENT_DATA because their last eGFR was from 2017 | `evaluate()` step 0 |
 | D15 | What if there are several eGFR results on the latest day? | If they fall on both sides of 20, return INSUFFICIENT_DATA ("conflicting eGFR results"). Otherwise use the lowest | Found in hand review (patient 220864: 54.377 and 16.41 at the same time, same encounter; the code picked one arbitrarily and said RECOMMEND). Real records also have repeat draws and corrected results. Flagging the conflict is more honest than picking one | `latest_day()`, `evaluate()` step 5 |
 
+## Card behavior (Phase 4)
+
+How the CDS Hooks service (`cds_service.py`) turns a `Result` into what the clinician sees. D1–D15 decide *what the rule concludes*; C1–C7 decide *when and how to say it*. Same process: change a decision here first, then the tests, then the code.
+
+| # | Question | Decision | Why | Code |
+| --- | --- | --- | --- | --- |
+| C1 | What if prefetch is missing, null, or a search Bundle has a `next` page? | Treat it as incomplete and run the same queries against `fhirServer`, following every page. If there's no `fhirServer`, return no cards | A partial eGFR history could flip D5 (persistence) or D7 (latest value). Never decide on part of the record | `from_prefetch()`, `from_fhir_server()` |
+| C2 | Which statuses get a card? | RECOMMEND and INSUFFICIENT_DATA get one card each. NOT_APPLICABLE gets none | `patient-view` fires on every chart opened. A card on every non-diabetic chart teaches clinicians to ignore the service (alert fatigue). INSUFFICIENT_DATA is shown because "order an eGFR" is useful advice (D10) | `cards_for()` |
+| C3 | Which indicator? | `info` for both cards | `warning` and `critical` are for harm if ignored. Not yet starting a guideline-recommended drug isn't urgent at chart open. Revisit for `order-select`, where the clinician is choosing a diabetes drug right now | `cards_for()` |
+| C4 | What does the card say? | Summary (under 140 characters) names the drug class, the reason and the source. RECOMMEND: "Consider an SGLT2 inhibitor: type 2 diabetes with CKD, eGFR ≥ 20 (ADA 11.7a)". INSUFFICIENT_DATA: "SGLT2 inhibitor eligibility unclear: " + what's missing (the last reason). Detail lists every reason from `evaluate()`. Source and link point to ADA Section 11 | The summary is often all a clinician reads, so it must stand alone. Listing every reason lets them check the logic against the chart | `cards_for()`, `_card()` |
+| C5 | Verify the EHR's JWT? | Not in the prototype. Log whether one was sent | Needed before any real deployment (CDS Hooks 2.0 requires it). Not needed for synthetic data and the public sandbox | `call_service()` |
+| C6 | Offer an order (a `suggestion`)? | No. Every card also says the logic hasn't been reviewed by a clinician | This spec hasn't had clinician sign-off (Phase 3, Step 7 deferred). Both behaviors are tied to one flag; flip it only after sign-off | `CLINICIAN_REVIEWED` |
+| C7 | What if anything throws? | Log the error and return `{"cards": []}` with HTTP 200 | A decision support service must never break the chart screen. The test guard (`no_hidden_errors`) makes sure this doesn't hide bugs in testing | `call_service()` |
+
 ## Truth table (hand-checked)
 
 Fill this in from the cohort run (Step 6 in the guide). Pick some patients the code marks RECOMMEND and some it doesn't, read their full record, and record what you conclude yourself before you look at the code's answer.
@@ -78,3 +92,6 @@ Fill this in from the cohort run (Step 6 in the guide). Pick some patients the c
 - [ ] D15: Is "same day" the right grouping for conflicting eGFR results, and should the lowest value win when they agree?
 - [ ] Should there be a separate continuation rule (on an SGLT2 inhibitor, eGFR below 20, not on dialysis)? What would it tell the clinician?
 - [ ] Should 11.7b (GLP-1 receptor agonist) be the next rule?
+- [ ] C2: Is an INSUFFICIENT_DATA card worth showing for every cause (no birth date, no recent eGFR, conflicting eGFRs), or only when a lab order would resolve it?
+- [ ] C3/C4: Is `info` the right level, and is the card wording clear and appropriately cautious?
+- [ ] C6: Once the spec is signed off, should the card offer a draft order, and for which agent and dose?

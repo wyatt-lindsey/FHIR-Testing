@@ -151,6 +151,7 @@ def test_insufficient_data_card_when_no_recent_egfr():
     r = client.post(URL, json=request_body(prefetch([T2D, CKD3], [egfr(41, 800)])))
     cards = r.json()["cards"]
     assert len(cards) == 1 and "unclear" in cards[0]["summary"]
+    assert "No eGFR in the last 365 days" in cards[0]["summary"]  # C4: name what's missing
     assert len(cards[0]["summary"]) < 140
 
 
